@@ -14,7 +14,7 @@ IMAGE_CACHE: Dict[str, dict] = {}
 
 
 @register(
-    "RecallGuard",
+    "astrbot_plugin_RecallGuard",
     "和泉智宏",
     "监听指定用户撤回图片并将其转发到指定群聊。",
     "1.0", 
