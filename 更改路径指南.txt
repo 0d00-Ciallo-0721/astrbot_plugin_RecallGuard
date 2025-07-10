@@ -1,0 +1,127 @@
+AstrBot 与 NapCat 协同部署完整指南
+本指南将引导您在一台全新的、已安装好 Docker 的 Linux 服务器上，完整部署 AstrBot 和 NapCat，并使“图片防撤回”插件正常工作。
+
+第一步：准备服务器环境
+安装 Docker 和 Docker Compose:
+请确保您的新服务器已经安装了 docker 和 docker-compose。
+
+创建项目目录结构:
+我们将仿照您之前的成功配置，在主目录 (~/) 下创建所有需要的文件夹。
+
+Bash
+
+# 回到主目录
+cd ~
+
+# 创建 astrbot 和 napcat 的主目录
+mkdir astrbot
+mkdir napcat
+
+# 创建用于两个容器共享数据的目录
+mkdir -p shared_qq_data/ntqq
+mkdir -p shared_qq_data/config
+
+第二步：上传和创建配置文件
+上传插件文件:
+请使用 scp 或您熟悉的工具，将您的插件文件 main.py 和 _conf_schema.json 上传到新服务器的以下目录中：
+~/astrbot/data/plugins/astrbot_plugin_anti_recall_image/
+
+创建 napcat 的 docker-compose.yml:
+在 ~/napcat/ 目录下，创建一个名为 docker-compose.yml 的文件，并将以下内容完整复制进去。
+
+~/napcat/docker-compose.yml:
+
+YAML
+
+version: '3.8'
+# NapCat 服务专用配置文件
+services:
+  napcat:
+    image: mlikiowa/napcat-docker:latest
+    container_name: napcat
+    restart: always
+    ports:
+      - "6099:6099"
+    environment:
+      - NAPCAT_UID=${NAPCAT_UID:-1000}
+      - NAPCAT_GID=${NAPCAT_GID:-1000}
+      - MODE=astrbot
+    volumes:
+      # 使用共享目录的绝对路径, 这里以 /root 目录为例
+      - /root/shared_qq_data/ntqq:/app/.config/QQ
+      - /root/shared_qq_data/config:/app/napcat/config
+    networks:
+      - astrbot_shared_network
+    mac_address: "02:42:ac:11:00:02"
+
+networks:
+  astrbot_shared_network:
+    external: true
+创建 astrbot 的 docker-compose.yml:
+在 ~/astrbot/ 目录下，创建一个名为 docker-compose.yml 的文件，并将以下内容完整复制进去。
+
+~/astrbot/docker-compose.yml:
+
+YAML
+
+version: '3.8'
+# AstrBot 服务专用配置文件
+services:
+  astrbot:
+    image: soulter/astrbot:latest
+    container_name: astrbot
+    restart: always
+    ports:
+      - "6185:6185"
+      - "6195:6195"
+      - "6199:6199"
+      - "6196:6196"
+      - "11451:11451"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data:/AstrBot/data
+      - /etc/localtime:/etc/localtime:ro
+      # 挂载与 napcat 完全相同的共享目录绝对路径, 这里以 /root 目录为例
+      - /root/shared_qq_data/ntqq:/app/.config/QQ
+      - /root/shared_qq_data/config:/app/napcat/config
+    networks:
+      - astrbot_shared_network
+
+networks:
+  astrbot_shared_network:
+    external: true
+提示: 上述两个文件中的绝对路径 /root/shared_qq_data/ 是基于您之前服务器的主目录为 /root 的情况。如果新服务器的主目录不同（例如 /home/ubuntu），请将所有 /root/ 替换为正确的路径。
+
+第三步：配置 Docker 并启动服务
+创建共享网络:
+这个网络是让两个独立的 compose 项目能够互相通信的桥梁。
+
+Bash
+
+docker network create astrbot_shared_network
+启动 NapCat 服务:
+
+Bash
+
+cd ~/napcat
+NAPCAT_UID=$(id -u) NAPCAT_GID=$(id -g) docker-compose up -d
+启动 AstrBot 服务:
+
+Bash
+
+cd ~/astrbot
+docker-compose up -d
+等待片刻，两个服务就会在后台启动。
+
+第四步：在 AstrBot WebUI 中完成最后配置
+登录 WebUI:
+在浏览器中访问 http://<您的新服务器IP>:6185。
+
+连接 NapCat:
+进入 “设置” -> “平台适配器”，添加一个 aiocqhttp 适配器，并配置好与 NapCat 的连接信息（通常是 ws://napcat:6099）。
+
+第五步：验证
+让被监听的QQ用户发送一张图片然后撤回，观察图片是否被成功转发到您指定的目标会话中。您也可以通过 docker logs -f astrbot 查看插件的实时日志。
+
+恭喜您！按照本指南操作，您就可以在任何新的服务器上快速部署这套稳定可靠的方案。

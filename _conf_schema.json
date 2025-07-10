@@ -1,0 +1,20 @@
+{
+  "monitored_users": {
+    "type": "list",
+    "description": "要监听的用户QQ号列表，请填写字符串格式的QQ号。",
+    "hint": "机器人会缓存这些用户发送的图片，以便在他们撤回时进行转发。",
+    "default": []
+  },
+  "target_sessions": {
+    "type": "list",
+    "description": "图片撤回后要转发到的目标会话ID列表。",
+    "hint": "会话ID格式为 platform:type:id，例如 aiocqhttp:group:123456。你可以通过转发插件的 /tr list 指令或查看日志获取。",
+    "default": []
+  },
+  "forward_message_text": {
+    "type": "text",
+    "description": "转发图片时附带的提示文字。",
+    "hint": "你可以使用占位符 {user_id} 和 {user_name} 来代表撤回图片的用户。",
+    "default": "检测到用户 {user_name}({user_id}) 撤回了一张图片："
+  }
+}
