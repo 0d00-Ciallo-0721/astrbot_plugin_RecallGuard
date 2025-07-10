@@ -1,14 +1,14 @@
 {
   "monitored_users": {
     "type": "list",
-    "description": "要监听的用户QQ号列表，请填写字符串格式的QQ号。",
+    "description": "要监听的用户QQ号列表。",
     "hint": "机器人会缓存这些用户发送的图片，以便在他们撤回时进行转发。",
     "default": []
   },
   "target_sessions": {
     "type": "list",
     "description": "图片撤回后要转发到的目标会话ID列表。",
-    "hint": "会话ID格式为 platform:type:id，例如 aiocqhttp:group:123456。你可以通过转发插件的 /tr list 指令或查看日志获取。",
+    "hint": "格式为 platform:type:id，例如 aiocqhttp:group:123456。",
     "default": []
   },
   "forward_message_text": {
