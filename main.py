@@ -10,17 +10,15 @@ from astrbot.api.message_components import Image as CompImage
 from astrbot.api.message_components import Plain as CompPlain
 from astrbot.api.star import Context, Star, register
 
-# 缓存最近图片的字典，用于存储消息ID与图片信息的映射
-# 格式: { "message_id": {"path": "...", "sender_id": "...", "sender_name": "...", "timestamp": ...} }
 IMAGE_CACHE: Dict[str, dict] = {}
 
 
 @register(
-    name="anti_recall",
-    author="YourName",
+    name="RecallGuard",
+    author="和泉智宏",
     desc="监听指定用户撤回图片并将其转发到指定群聊。",
-    version="1.0.4", # 版本号更新
-    repo="your_repo_url"
+    version="1.0", # 版本号更新
+    repo="https://github.com/0d00-Ciallo-0721/astrbot_plugin_RecallGuard"
 )
 class AntiRecallPlugin(Star):
     def __init__(self, context: Context, config=None):
