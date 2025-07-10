@@ -14,11 +14,11 @@ IMAGE_CACHE: Dict[str, dict] = {}
 
 
 @register(
-    name="RecallGuard",
-    author="和泉智宏",
-    desc="监听指定用户撤回图片并将其转发到指定群聊。",
-    version="1.0", # 版本号更新
-    repo="https://github.com/0d00-Ciallo-0721/astrbot_plugin_RecallGuard"
+    "RecallGuard",
+    "和泉智宏",
+    "监听指定用户撤回图片并将其转发到指定群聊。",
+    "1.0", 
+    "https://github.com/0d00-Ciallo-0721/astrbot_plugin_RecallGuard"
 )
 class AntiRecallPlugin(Star):
     def __init__(self, context: Context, config=None):
