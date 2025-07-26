@@ -1,20 +1,89 @@
 {
-  "monitored_users": {
-    "type": "list",
-    "description": "要监听的用户QQ号列表。",
-    "hint": "机器人会缓存这些用户发送的图片，以便在他们撤回时进行转发。",
-    "default": []
+  "monitoring_options": {
+    "type": "object",
+    "description": "监控类型设置 (请分别打开要监控的消息类型)",
+    "items": {
+      "monitor_plain_text": {
+        "type": "bool",
+        "description": "监控普通文本消息",
+        "default": true
+      },
+      "monitor_images": {
+        "type": "bool",
+        "description": "监控图片消息",
+        "default": true
+      },
+      "monitor_audio": {
+        "type": "bool",
+        "description": "监控音频(语音)消息",
+        "hint": "依赖协议端的能力，可能并非所有协议端都支持。",
+        "default": true
+      }
+    }
   },
-  "target_sessions": {
-    "type": "list",
-    "description": "图片撤回后要转发到的目标会话ID列表。",
-    "hint": "格式为 platform:type:id，例如 aiocqhttp:group:123456。",
-    "default": []
+  "user_monitoring": {
+    "type": "object",
+    "description": "指定用户监控",
+    "items": {
+      "monitored_users": {
+        "type": "list",
+        "description": "要全局监控的用户QQ号列表。",
+        "hint": "无论在哪个群或私聊，这些用户的消息都会被监控。",
+        "default": []
+      }
+    }
   },
-  "forward_message_text": {
-    "type": "text",
-    "description": "转发图片时附带的提示文字。",
-    "hint": "你可以使用占位符 {user_id} 和 {user_name} 来代表撤回图片的用户。",
-    "default": "检测到用户 {user_name}({user_id}) 撤回了一张图片："
+  "group_monitoring": {
+    "type": "object",
+    "description": "指定群聊监控（全员）",
+    "items": {
+      "enable_group_monitoring": {
+        "type": "bool",
+        "description": "开启群聊全员监控",
+        "default": false
+      },
+      "monitored_groups": {
+        "type": "list",
+        "description": "要进行全员监控的群聊会话ID列表。",
+        "hint": "推荐格式 platform:type:id，例如 aiocqhttp:group:123456。插件会忽略type的大小写。",
+        "default": []
+      }
+    }
+  },
+  "forwarding_options": {
+    "type": "object",
+    "description": "转发设置",
+    "items": {
+      "target_sessions": {
+        "type": "list",
+        "description": "撤回消息的统一转发目标会话ID列表。",
+        "hint": "所有捕获到的撤回消息都会被转发到这里。",
+        "default": []
+      },
+      "forward_message_text": {
+        "type": "text",
+        "description": "转发消息时附带的提示文字。",
+        "hint": "你可以使用占位符 {user_name} 和 {user_id}。",
+        "default": "检测到用户 {user_name}({user_id}) 撤回了一条消息："
+      }
+    }
+  },
+  "cleanup_options": {
+    "type": "object",
+    "description": "缓存清理设置",
+    "items": {
+      "cache_lifetime_seconds": {
+        "type": "int",
+        "description": "缓存生命周期（秒）",
+        "hint": "消息在被缓存超过这个时间后，将被自动清理。默认为 86400 秒（24小时）。",
+        "default": 86400
+      },
+      "cleanup_interval_seconds": {
+        "type": "int",
+        "description": "清理任务运行间隔（秒）",
+        "hint": "后台每隔设定的时间会运行一次清理任务。默认为 600 秒（10分钟）。",
+        "default": 600
+      }
+    }
   }
 }
