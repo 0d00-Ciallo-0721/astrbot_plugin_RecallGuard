@@ -23,12 +23,18 @@
   },
   "user_monitoring": {
     "type": "object",
-    "description": "指定用户监控",
+    "description": "指定用户监控与黑名单",
     "items": {
       "monitored_users": {
         "type": "list",
-        "description": "要全局监控的用户QQ号列表。",
+        "description": "要全局监控的用户QQ号列表 (白名单)。",
         "hint": "无论在哪个群或私聊，这些用户的消息都会被监控。",
+        "default": []
+      },
+      "blacklist_users": {
+        "type": "list",
+        "description": "绝不监控的用户QQ号列表 (黑名单)。",
+        "hint": "黑名单的优先级最高。这些用户的任何消息都不会被缓存。",
         "default": []
       }
     }
@@ -54,6 +60,13 @@
     "type": "object",
     "description": "转发设置",
     "items": {
+      "forwarding_format": {
+        "type": "string",
+        "description": "撤回消息的转发格式",
+        "options": ["sequential", "merged"],
+        "hint": "'sequential': 逐条发送(默认, 兼容性最好); 'merged': 合并转发(更美观, 但在Docker部署时需确保共享目录配置正确)。",
+        "default": "sequential"
+      },
       "target_sessions": {
         "type": "list",
         "description": "撤回消息的统一转发目标会话ID列表。",
@@ -63,8 +76,8 @@
       "forward_message_text": {
         "type": "text",
         "description": "转发消息时附带的提示文字。",
-        "hint": "你可以使用占位符 {user_name} 和 {user_id}。",
-        "default": "检测到用户 {user_name}({user_id}) 撤回了一条消息："
+        "hint": "你可以使用占位符 {user_name}, {user_id}, {group_name}, {group_id}。",
+        "default": "检测到来自群聊【{group_name}】的用户 {user_name}({user_id}) 撤回了一条消息："
       }
     }
   },
@@ -83,6 +96,12 @@
         "description": "清理任务运行间隔（秒）",
         "hint": "后台每隔设定的时间会运行一次清理任务。默认为 600 秒（10分钟）。",
         "default": 600
+      },
+      "max_cache_size_mb": {
+        "type": "int",
+        "description": "缓存目录最大体积 (MB)",
+        "hint": "当缓存目录超过此大小时，将按时间从旧到新清理文件，直到低于阈值。设置为 0 表示不限制。",
+        "default": 1024
       }
     }
   }
