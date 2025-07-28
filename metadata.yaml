@@ -1,5 +1,5 @@
-name: astrbot_plugin_RecallGuard # 这是你的插件的唯一识别名。
-desc: 图片防撤回插件 # 插件简短描述
-version: v1.0 # 插件版本号。格式：v1.1.1 或者 v1.1
-author: 和泉智宏 # 作者
-repo:  https://github.com/0d00-Ciallo-0721/astrbot_plugin_RecallGuard # 插件的仓库地址
+name: astrbot_plugin_recallguard
+desc: 功能全面的防撤回插件，支持监控文本/图片/语音，可选合并转发或逐条发送，支持黑白名单和缓存管理。
+version: v2.0
+author: 和泉智宏
+repo: https://github.com/0d00-Ciallo-0721/astrbot_plugin_RecallGuard
