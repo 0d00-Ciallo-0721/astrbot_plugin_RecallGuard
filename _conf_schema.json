@@ -1,7 +1,7 @@
 {
   "monitoring_options": {
     "type": "object",
-    "description": "监控类型设置 (请分别打开要监控的消息类型)",
+    "description": "监控类型设置",
     "items": {
       "monitor_plain_text": {
         "type": "bool",
@@ -15,8 +15,26 @@
       },
       "monitor_audio": {
         "type": "bool",
-        "description": "监控音频(语音)消息",
-        "hint": "依赖协议端的能力，可能并非所有协议端都支持。",
+        "description": "监控语音消息",
+        "hint": "依赖 NapCat/协议端 get_record 能力。",
+        "default": true
+      },
+      "monitor_video": {
+        "type": "bool",
+        "description": "监控视频消息",
+        "hint": "超过 100MB 的视频会转为摘要，避免重发失败。",
+        "default": true
+      },
+      "monitor_files": {
+        "type": "bool",
+        "description": "监控文件消息",
+        "hint": "依赖 NapCat/协议端 get_file 能力。",
+        "default": true
+      },
+      "monitor_other_segments": {
+        "type": "bool",
+        "description": "监控其他消息段",
+        "hint": "表情、@、回复、JSON/XML、转发、位置、分享等会尽量原样转发，无法重发时转为摘要。",
         "default": true
       }
     }
@@ -27,14 +45,14 @@
     "items": {
       "monitored_users": {
         "type": "list",
-        "description": "要全局监控的用户QQ号列表 (白名单)。",
+        "description": "要全局监控的用户 QQ 号列表（白名单）。",
         "hint": "无论在哪个群或私聊，这些用户的消息都会被监控。",
         "default": []
       },
       "blacklist_users": {
         "type": "list",
-        "description": "绝不监控的用户QQ号列表 (黑名单)。",
-        "hint": "黑名单的优先级最高。这些用户的任何消息都不会被缓存。",
+        "description": "绝不监控的用户 QQ 号列表（黑名单）。",
+        "hint": "黑名单优先级最高，这些用户的任何消息都不会被缓存。",
         "default": []
       }
     }
@@ -50,8 +68,8 @@
       },
       "monitored_groups": {
         "type": "list",
-        "description": "要进行全员监控的群聊会话ID列表。",
-        "hint": "推荐格式 platform:type:id，例如 aiocqhttp:group:123456。插件会忽略type的大小写。",
+        "description": "要进行全员监控的群聊会话 ID 列表。",
+        "hint": "推荐格式 platform:type:id，例如 aiocqhttp:group:123456。插件会忽略 type 的大小写。",
         "default": []
       }
     }
@@ -64,19 +82,19 @@
         "type": "string",
         "description": "撤回消息的转发格式",
         "options": ["sequential", "merged"],
-        "hint": "'sequential': 逐条发送(默认, 兼容性最好); 'merged': 合并转发(更美观, 但在Docker部署时需确保共享目录配置正确)。",
+        "hint": "'sequential': 逐条发送，优先走 AstrBot，失败时走 NapCat 原生 API；'merged': 合并转发，失败时自动降级为普通消息。",
         "default": "sequential"
       },
       "target_sessions": {
         "type": "list",
-        "description": "撤回消息的统一转发目标会话ID列表。",
-        "hint": "所有捕获到的撤回消息都会被转发到这里。",
+        "description": "撤回消息的统一转发目标会话 ID 列表。",
+        "hint": "群聊示例 aiocqhttp:group:123456；私聊示例 aiocqhttp:friend:123456 或 aiocqhttp:private:123456。",
         "default": []
       },
       "forward_message_text": {
         "type": "text",
         "description": "转发消息时附带的提示文字。",
-        "hint": "你可以使用占位符 {user_name}, {user_id}, {group_name}, {group_id}。",
+        "hint": "可使用占位符 {user_name}, {user_id}, {group_name}, {group_id}。",
         "default": "检测到来自群聊【{group_name}】的用户 {user_name}({user_id}) 撤回了一条消息："
       }
     }
@@ -88,18 +106,18 @@
       "cache_lifetime_seconds": {
         "type": "int",
         "description": "缓存生命周期（秒）",
-        "hint": "消息在被缓存超过这个时间后，将被自动清理。默认为 86400 秒（24小时）。",
+        "hint": "消息在被缓存超过这个时间后，将被自动清理。默认为 86400 秒（24 小时）。",
         "default": 86400
       },
       "cleanup_interval_seconds": {
         "type": "int",
         "description": "清理任务运行间隔（秒）",
-        "hint": "后台每隔设定的时间会运行一次清理任务。默认为 600 秒（10分钟）。",
+        "hint": "后台每隔设定的时间会运行一次清理任务。默认为 600 秒（10 分钟）。",
         "default": 600
       },
       "max_cache_size_mb": {
         "type": "int",
-        "description": "缓存目录最大体积 (MB)",
+        "description": "缓存目录最大体积（MB）",
         "hint": "当缓存目录超过此大小时，将按时间从旧到新清理文件，直到低于阈值。设置为 0 表示不限制。",
         "default": 1024
       }
